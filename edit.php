@@ -44,6 +44,8 @@ if ($_POST) {
 
         $stmt->execute();
 
+        $_SESSION['flash_messages']['success'] = 'Transaction updated!';
+
         // Redirect
         header('Location: index.php?success=1');
         exit;
@@ -52,18 +54,7 @@ if ($_POST) {
 }
 
 ?>
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Wallet</title>
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-</head>
-
-<body>
+<?php include __DIR__ . '/views/header.php' ?>
 
     <div class="container">
         <h1>My Wallet</h1>
@@ -88,9 +79,14 @@ if ($_POST) {
                 <div class="col-sm-10">
                     <select class="form-select" id="tag_id" name="tag_id">
                         <option></option>
-                        <?php foreach ($tags as $key => $value) : ?>
-                        <option value="<?= $key ?>" <?= $key == $data['tag_id'] ? 'selected' : '' ?> ><?= $value ?></option>
-                        <?php endforeach ?>
+                        <?php
+                        $query = 'SELECT * FROM tags ORDER BY name';
+                        $result = $mysqli->query($query);
+                        while ($row = $result->fetch_object()) :
+                        ?>
+                        <option value="<?= $row->id ?>" <?= $row->id == $data['tag_id'] ? 'selected' : '' ?> ><?= $row->name ?></option>
+                        <?php endwhile ?>
+                        
                     </select>
                 </div>
             </div>
@@ -99,7 +95,4 @@ if ($_POST) {
         </form>
     </div>
 
-    <script src="assets/js/bootstrap.bundle.min.js"></script>
-</body>
-
-</html>
+<?php include __DIR__ . '/views/footer.php' ?>

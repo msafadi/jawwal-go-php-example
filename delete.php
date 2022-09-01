@@ -1,4 +1,7 @@
 <?php
+
+use Models\Transaction;
+
 include __DIR__ . '/includes/db.php';
 include __DIR__ . '/includes/functions.php';
 
@@ -24,13 +27,9 @@ if (!$data) {
 }
 
 if (isset($_POST['confirmed']) && $_POST['confirmed'] == 'yes') {
-    $query = 'DELETE FROM transactions WHERE id = ?';
+    Transaction::delete($id);
 
-    $stmt = $mysqli->prepare($query); // mysqli_stmt
-
-    $stmt->bind_param('i', $id);
-
-    $stmt->execute();
+    $_SESSION['flash_messages']['success'] = 'Transaction deleted!';
 
     // Redirect
     header('Location: index.php?success=1');
@@ -38,18 +37,7 @@ if (isset($_POST['confirmed']) && $_POST['confirmed'] == 'yes') {
 }
 
 ?>
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Wallet</title>
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-</head>
-
-<body>
+<?php include __DIR__ . '/views/header.php' ?>
 
     <div class="container">
         <h1>My Wallet</h1>
@@ -63,7 +51,4 @@ if (isset($_POST['confirmed']) && $_POST['confirmed'] == 'yes') {
         </form>
     </div>
 
-    <script src="assets/js/bootstrap.bundle.min.js"></script>
-</body>
-
-</html>
+<?php include __DIR__ . '/views/footer.php' ?>

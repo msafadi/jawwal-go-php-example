@@ -2,6 +2,8 @@
 include __DIR__ . '/includes/db.php';
 include __DIR__ . '/includes/functions.php';
 
+start_session();
+
 $error = '';
 
 if ($_POST) {
@@ -12,15 +14,16 @@ if ($_POST) {
 
         $status = 'active';
 
-        $query = 'SELECT * FROM users WHERE email = ? AND password = ? AND status = ? LIMIT 1';
+        $query = 'SELECT * FROM users WHERE email = ?  AND status = ? LIMIT 1';
         $stmt = $mysqli->prepare($query);
         
-        //$stmt->bind_param('sss', $email, $password, $status); // Before 8.1
-        $stmt->execute([$email, $password, $status]); // Valid in PHP 8.1
+        //$stmt->bind_param('ss', $email, $status); // Before 8.1
+        $stmt->execute([$email, $status]); // Valid in PHP 8.1
         $result = $stmt->get_result();
 
         $row = $result->fetch_assoc();
-        if ($row) {
+        
+        if ($row && password_verify($password, $row['password'])) {
             login($row);
         
             if ($_POST['remember'] ?? false) {
@@ -62,6 +65,15 @@ if ($_POST) {
         <div class="alert alert-danger">
             <?= $error ?>
         </div>
+        <?php endif ?>
+
+        <?php if (isset($_SESSION['flash_messages']['success'])) : ?>
+            <div class="alert alert-success">
+                <?= $_SESSION['flash_messages']['success'] ?>
+                <?php
+                unset($_SESSION['flash_messages']['success']);
+                ?>
+            </div>
         <?php endif ?>
 
         <form action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="post">

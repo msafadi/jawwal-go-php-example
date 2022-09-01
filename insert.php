@@ -1,4 +1,7 @@
 <?php
+
+use Models\Transaction;
+
 include __DIR__ . '/includes/db.php';
 include __DIR__ . '/includes/functions.php';
 include __DIR__ . '/includes/constants.php';
@@ -14,17 +17,13 @@ if ($_POST) {
 
     if ($amount && $description) {
 
-        $query = 'INSERT INTO transactions (amount, description, tag_id, user_id, created_at)
-            VALUES (?, ?, ?, ?, ?)';
+        Transaction::create([
+            'amount' => $amount,
+            'description' => $description,
+            'tag_id' => $tag_id,
+        ]);
 
-        $user_id = 1;
-        $time = date('Y-m-d H:i:s'); // 2022-08-31 14:01:00
-
-        $stmt = $mysqli->prepare($query); // mysqli_stmt
-
-        $stmt->bind_param('dsiis', $amount, $description, $tag_id, $user_id, $time);
-
-        $stmt->execute();
+        $_SESSION['flash_messages']['success'] = 'Transaction added!';
 
         // Redirect
         header('Location: index.php');
@@ -34,18 +33,8 @@ if ($_POST) {
 }
 
 ?>
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Wallet</title>
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-</head>
-
-<body>
+<?php include __DIR__ . '/views/header.php' ?>
 
     <div class="container">
         <h1>My Wallet</h1>
@@ -70,9 +59,13 @@ if ($_POST) {
                 <div class="col-sm-10">
                     <select class="form-select" id="tag_id" name="tag_id">
                         <option></option>
-                        <?php foreach ($tags as $key => $value) : ?>
-                        <option value="<?= $key ?>"><?= $value ?></option>
-                        <?php endforeach ?>
+                        <?php
+                        $query = 'SELECT * FROM tags ORDER BY name';
+                        $result = $mysqli->query($query);
+                        while ($row = $result->fetch_object()) :
+                        ?>
+                        <option value="<?= $row->id ?>"><?= $row->name ?></option>
+                        <?php endwhile ?>
                     </select>
                 </div>
             </div>
@@ -81,7 +74,4 @@ if ($_POST) {
         </form>
     </div>
 
-    <script src="assets/js/bootstrap.bundle.min.js"></script>
-</body>
-
-</html>
+<?php include __DIR__ . '/views/footer.php' ?>
