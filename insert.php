@@ -1,5 +1,11 @@
 <?php
+include __DIR__ . '/includes/db.php';
+include __DIR__ . '/includes/functions.php';
 include __DIR__ . '/includes/constants.php';
+
+if (!is_authenticated()) {
+    redirect('login.php');
+}
 
 if ($_POST) {
     $amount = $_POST['amount'] ?? 0;
@@ -7,7 +13,6 @@ if ($_POST) {
     $tag_id = $_POST['tag_id'] ?? null;
 
     if ($amount && $description) {
-        include __DIR__ . '/includes/db.php';
 
         $query = 'INSERT INTO transactions (amount, description, tag_id, user_id, created_at)
             VALUES (?, ?, ?, ?, ?)';

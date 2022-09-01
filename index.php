@@ -1,6 +1,12 @@
 <?php
 include __DIR__ . '/includes/db.php';
+include __DIR__ . '/includes/functions.php';
 include __DIR__ . '/includes/constants.php';
+
+if (!is_authenticated()) {
+    redirect('login.php');
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,7 +22,7 @@ include __DIR__ . '/includes/constants.php';
 <body>
 
     <div class="container">
-        <h1>My Wallet</h1>
+        <h1>My Wallet : <?= $_SESSION['user']['name'] ?> | <a href="logout.php">Logout</a></h1>
         <hr>
         <div class="d-flex justify-content-between mb-4">
             <h2>Transactions</h2>

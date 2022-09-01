@@ -1,6 +1,12 @@
 <?php
 include __DIR__ . '/includes/db.php';
+include __DIR__ . '/includes/functions.php';
 include __DIR__ . '/includes/constants.php';
+
+if (!is_authenticated()) {
+    redirect('login.php');
+}
+
 
 $id = (int) $_GET['id'] ?? 0;
 if (!$id) {
